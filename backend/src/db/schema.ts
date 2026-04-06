@@ -5,7 +5,7 @@ import { relations } from 'drizzle-orm';
 export const userRoleEnum = pgEnum('user_role', ['client', 'handyman', 'admin']);
 export const handymanStatusEnum = pgEnum('handyman_status', ['active', 'pending']);
 export const handymanAvailabilityEnum = pgEnum('handyman_availability', ['available', 'on_job', 'offline']);
-export const jobStatusEnum = pgEnum('job_status', ['dispatching', 'en_route', 'on_site', 'completed', 'cancelled']);
+export const jobStatusEnum = pgEnum('job_status', ['pending', 'dispatching', 'en_route', 'on_site', 'completed', 'cancelled']);
 
 // 1. Users Table
 export const users = pgTable('users', {
@@ -21,7 +21,7 @@ export const users = pgTable('users', {
 export const handymen = pgTable('handymen', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id).notNull().unique(),
-  skills: jsonb('skills').$type<string[]>().default([]).notNull(), // e.g. ["plumbing", "electrical"]
+  skills: jsonb('skills').$type<string[]>().default([]).notNull(),
   serviceRadiusKm: integer('service_radius_km').default(20).notNull(),
   status: handymanStatusEnum('status').default('pending').notNull(),
   availability: handymanAvailabilityEnum('availability').default('offline').notNull(),
@@ -34,14 +34,15 @@ export const jobs = pgTable('jobs', {
   id: serial('id').primaryKey(),
   clientId: integer('client_id').references(() => users.id).notNull(),
   handymanId: integer('handyman_id').references(() => handymen.id),
-  status: jobStatusEnum('status').default('dispatching').notNull(),
-  jobType: varchar('job_type', { length: 100 }).notNull(), // e.g. "pipe_leak"
+  status: jobStatusEnum('status').default('pending').notNull(),
+  jobType: varchar('job_type', { length: 100 }).notNull(),
   description: text('description').notNull(),
-  address: text('address').notNull(),
   latitude: doublePrecision('latitude').notNull(),
   longitude: doublePrecision('longitude').notNull(),
-  priceQuote: doublePrecision('price_quote'), // Estimated total
-  priceFinal: doublePrecision('price_final'), // Captured total
+  estimatedDurationHours: doublePrecision('estimated_duration_hours').notNull(),
+  laborCost: doublePrecision('labor_cost').notNull(),
+  transportFee: doublePrecision('transport_fee').notNull(),
+  totalPrice: doublePrecision('total_price').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -50,10 +51,10 @@ export const jobs = pgTable('jobs', {
 export const jobParts = pgTable('job_parts', {
   id: serial('id').primaryKey(),
   jobId: integer('job_id').references(() => jobs.id).notNull(),
-  partName: varchar('part_name', { length: 255 }).notNull(),
-  quantity: integer('quantity').default(1).notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  quantity: integer('quantity').notNull(),
   unitCost: doublePrecision('unit_cost').notNull(),
-  supplierOrderId: varchar('supplier_order_id', { length: 255 }),
+  totalCost: doublePrecision('total_cost').notNull(),
 });
 
 // 5. Payments Table
@@ -62,7 +63,7 @@ export const payments = pgTable('payments', {
   jobId: integer('job_id').references(() => jobs.id).notNull(),
   stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }).notNull(),
   amount: doublePrecision('amount').notNull(),
-  status: varchar('status', { length: 50 }).notNull(), // e.g. "requires_payment_method", "succeeded"
+  status: varchar('status', { length: 50 }).notNull(),
   capturedAt: timestamp('captured_at'),
 });
 
@@ -80,7 +81,7 @@ export const pricingConfig = pgTable('pricing_config', {
   jobType: varchar('job_type', { length: 100 }).primaryKey(),
   laborRatePerHour: doublePrecision('labor_rate_per_hour').notNull(),
   transportFee: doublePrecision('transport_fee').default(0).notNull(),
-  markupPct: doublePrecision('markup_pct').default(0.15).notNull(), // Default 15% markup on parts
+  markupPct: doublePrecision('markup_pct').default(0.15).notNull(),
 });
 
 // --- Relations ---
@@ -99,7 +100,11 @@ export const handymanRelations = relations(handymen, ({ one, many }) => ({
 export const jobRelations = relations(jobs, ({ one, many }) => ({
   client: one(users, { fields: [jobs.clientId], references: [users.id] }),
   handyman: one(handymen, { fields: [jobs.handymanId], references: [handymen.id] }),
-  parts: many(jobParts),
+  jobParts: many(jobParts),
   payment: one(payments, { fields: [jobs.id], references: [payments.jobId] }),
   warranty: one(warranties, { fields: [jobs.id], references: [warranties.jobId] }),
+}));
+
+export const jobPartRelations = relations(jobParts, ({ one }) => ({
+  job: one(jobs, { fields: [jobParts.jobId], references: [jobs.id] }),
 }));

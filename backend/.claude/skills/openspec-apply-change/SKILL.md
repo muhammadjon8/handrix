@@ -64,27 +64,18 @@ Implement tasks from an OpenSpec change.
    - Remaining tasks overview
    - Dynamic instruction from CLI
 
-6. **Linear ticket setup** *(before starting implementation)*
+6. **Linear ticket setup** *(before each individual task)*
 
-   Ask the user for a Linear ticket link for this work session. Two options:
+   **IMPORTANT: Create a brand new ticket for EVERY task. Never reuse or edit existing tickets.**
 
-   **Option A — User provides a ticket link:**
-   - Accept the URL (e.g., `https://linear.app/handrix/issue/HAN-X/...`)
-   - Extract the issue ID (e.g., `HAN-X`) from the URL
-   - Fetch the current ticket details using the Linear MCP tool
-
-   **Option B — Create a new ticket:**
-   - Use the Linear MCP tool to create a new issue in the Handrix team
-   - Title: the change name or a short summary of the pending tasks
-   - Announce the created ticket URL to the user
-
-   **Then for the resolved ticket (either option):**
-   - Update the ticket **description** with:
-     - The change name being implemented
-     - The list of pending tasks for this session
-     - Link to the relevant spec file(s)
+   Before starting each task:
+   - Use the Linear MCP `save_issue` tool to **create a new issue** in the Handrix team
+   - Title format: `[Task <N>] <task description>` (e.g., `[Task 2.4] Set up OpenAI SDK with GPT-4o function calling`)
+   - Description: task number, related spec, what will be implemented
    - Set ticket **status** → `In Progress`
-   - Announce: "🎫 Ticket <ID> is now In Progress"
+   - Announce: "🎫 Created ticket <ID> → In Progress"
+
+   Do NOT reuse old tickets. Each task gets its own fresh ticket.
 
 7. **Implement tasks (loop until done or blocked)**
 
@@ -93,6 +84,10 @@ Implement tasks from an OpenSpec change.
    - Make the code changes required
    - Keep changes minimal and focused
    - Mark task complete in the tasks file: `- [ ]` → `- [x]`
+   - **After completing each task:**
+     - Append a row to `SESSION_LOG.md` at the workspace root: task number/title, start time, finish time, files created/modified
+     - Set the task's Linear ticket **status** → `In Review`
+     - Create a new ticket for the NEXT task and set it → `In Progress`
    - Continue to next task
 
    **Pause if:**

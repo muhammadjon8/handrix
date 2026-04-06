@@ -15,9 +15,9 @@
 - [x] 2.3 Implement Role-Based Access Control (RBAC) middleware for `client` and `handyman` roles
 
 ### AI & Job Classification
-- [ ] 2.4 Set up OpenAI SDK with GPT-4o function calling for `classify_job`
-- [ ] 2.5 Implement `POST /intake/chat` (Session-bound AI conversation for job intake)
-- [ ] 2.6 Implement logic to generate price quote from classified job (Labor + Parts config)
+- [x] 2.4 Set up AI provider abstraction layer with Gemini 1.5 Flash (free tier) as default
+- [x] 2.5 Implement `POST /intake/chat` (Session-bound AI conversation for job intake)
+- [x] 2.6 Implement pricing engine — calculate quote from classified job (Labor + Parts + Transport)
 
 ### Job Lifecycle & Dispatch
 - [ ] 2.7 Implement `POST /jobs` (Create job from confirmed classification)
