@@ -5,9 +5,10 @@ import { PricingModule } from './pricing/pricing.module';
 import { JobsModule } from './jobs/jobs.module';
 import { SocketModule } from './socket/socket.module';
 import { DispatchModule } from './dispatch/dispatch.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
-  imports: [AuthModule, IntakeModule, PricingModule, JobsModule, SocketModule, DispatchModule],
+  imports: [AuthModule, IntakeModule, PricingModule, JobsModule, SocketModule, DispatchModule, NotificationsModule],
   controllers: [],
   providers: [],
 })

@@ -41,4 +41,11 @@ export class JobsController {
   async list(@Request() req: any) {
     return this.jobsService.findByClient(req.user.id);
   }
+
+  @Get('handyman')
+  @Roles('handyman')
+  @ApiOperation({ summary: 'List all jobs for the authenticated handyman' })
+  async listHandyman(@Request() req: any) {
+    return this.jobsService.findByHandyman(req.user.id);
+  }
 }

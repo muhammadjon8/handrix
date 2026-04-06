@@ -27,12 +27,12 @@
 
 ### Real-Time & Notifications
 - [x] 2.11 Set up Socket.io for Real-time status broadcasting (client rooms)
-- [ ] 2.12 Implement SendGrid email triggers for booking, completion, and job offers
+- [x] 2.12 Implement SendGrid email triggers for booking, completion, and job offers
 
 ### Payments & Warranty
 - [ ] 2.13 Implement Stripe PaymentIntent creation (pre-auth) on job booking
 - [ ] 2.14 Implement Stripe Capture and receipt generation on job completion
-- [ ] 2.15 Implement Warranty record generation system
+- [x] 2.15 Implement Warranty record generation system
 
 ## 3. Frontend — Client Web App (React)
 
@@ -47,25 +47,25 @@
 ### Booking & Tracking
 - [x] 3.5 Build Pricing Breakdown and "Accept & Book" screen
 - [ ] 3.6 Build Stripe Elements (web) payment collection form
-- [ ] 3.7 Build Active Job Status tracker (Real-time updates via Socket.io)
+- [x] 3.7 Build Active Job Status tracker (Real-time updates via Socket.io)
 
 ### History & Warranty
-- [ ] 3.8 Build Job History page with list of past jobs
-- [ ] 3.9 Build Warranty display (Active/Expired badges in history)
+- [x] 3.8 Build Job History page with list of past jobs
+- [x] 3.9 Build Warranty display (Active/Expired badges in history)
 
 ## 4. Frontend — Handyman Portal (React)
 
 ### Portal Basics
-- [ ] 4.1 Build Handyman Login and Availability Toggle
-- [ ] 4.2 Build Incoming Job Offer card with 60-second countdown timer
+- [x] 4.1 Build Handyman Login and Availability Toggle
+- [x] 4.2 Build Incoming Job Offer card with 60-second countdown timer
 
 ### Job Management
-- [ ] 4.3 Build Job Details view (Address, Parts list, Client notes)
-- [ ] 4.4 Add "Navigate to Job" deep-link (Google Maps intent)
-- [ ] 4.5 Build Status Progression panel (I'm on my way → I've Arrived → Complete)
+- [x] 4.3 Build Job Details view (Address, Parts list, Client notes)
+- [x] 4.4 Add "Navigate to Job" deep-link (Google Maps intent)
+- [x] 4.5 Build Status Progression panel (I'm on my way → I've Arrived → Complete)
 
 ### Earnings
-- [ ] 4.6 Build Earnings summary and job history list
+- [x] 4.6 Build Earnings summary and job history list
 
 ## 5. Integration & QA
 

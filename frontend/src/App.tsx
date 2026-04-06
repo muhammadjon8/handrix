@@ -1,14 +1,26 @@
 import { useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Hammer, User } from 'lucide-react';
+import { Hammer, User, History } from 'lucide-react';
 import './App.css'; // Just keeping it if specific app styles are needed, but we rely heavily on index.css
 
 import Auth from './pages/Auth';
 import AiChat from './components/AiChat';
+import JobHistory from './components/JobHistory';
 
 function App() {
-  const token = localStorage.getItem('token'); // Basic auth state check for UI
+  const token = localStorage.getItem('token');
+  
+  let userRole = null;
+  if(token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      userRole = payload.role;
+    } catch(e) {}
+  }
+
+  const isHandyman = userRole === 'handyman';
+  const isClient = userRole === 'client';
 
   return (
     <div className="app-container">
@@ -22,16 +34,26 @@ function App() {
         </Link>
         
         <div className="nav-links">
-          <Link to="/portal" className="nav-link">
-            <User size={18} />
-            Handyman Portal
-          </Link>
+          {token && (
+            <Link to={isHandyman ? "/portal/history" : "/client/history"} className="nav-link font-medium">
+              <History size={18} />
+              {isHandyman ? 'Earnings' : 'History'}
+            </Link>
+          )}
+
+          {isHandyman && (
+            <Link to="/portal" className="nav-link font-medium">
+              <User size={18} />
+              Portal
+            </Link>
+          )}
+
           {!token ? (
             <Link to="/auth" className="btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem' }}>
               Sign In
             </Link>
           ) : (
-            <button className="nav-link" onClick={() => { localStorage.removeItem('token'); window.location.reload(); }} style={{ background: 'none', border:'none', cursor:'pointer' }}>
+            <button className="nav-link text-red-400 font-medium whitespace-nowrap" onClick={() => { localStorage.removeItem('token'); window.location.href = '/'; }} style={{ background: 'none', border:'none', cursor:'pointer' }}>
               Logout
             </button>
           )}
@@ -40,8 +62,26 @@ function App() {
 
       <main className="content-area">
         <Routes>
-          <Route path="/" element={<ClientHome />} />
-          <Route path="/portal" element={<PortalHome />} />
+          {/* Landing / Client Flow */}
+          <Route path="/" element={
+            !token ? <Auth /> : 
+            isHandyman ? <HandymanPortal /> : 
+            <ClientHome />
+          } />
+
+          {/* Explicit Handyman Route */}
+          <Route path="/portal" element={
+            isHandyman ? <HandymanPortal /> : <Auth />
+          } />
+
+          {/* History Views */}
+          <Route path="/client/history" element={
+            isClient ? <div className="view-container w-full"><JobHistory role="client" /></div> : <Auth />
+          } />
+          <Route path="/portal/history" element={
+            isHandyman ? <div className="view-container w-full"><JobHistory role="handyman" /></div> : <Auth />
+          } />
+
           <Route path="/auth" element={<Auth />} />
         </Routes>
       </main>
@@ -50,22 +90,31 @@ function App() {
 }
 
 import JobConfirmation from './components/JobConfirmation';
+import ActiveJobTracker from './components/ActiveJobTracker';
 
 // Quick Placeholder: Client Landing
 function ClientHome() {
   const [chatActive, setChatActive] = useState(false);
   const [jobData, setJobData] = useState<any>(null);
+  const [bookedJobId, setBookedJobId] = useState<number | null>(null);
 
   const handleJobClassified = (data: any, location: { lat: number, lng: number, address: string }) => {
     setJobData({ ...data, location });
   };
 
   const handleBookingComplete = (jobResponse: any) => {
-    alert(`Success! Job created with ID: ${jobResponse.id}. Wait for a Handyman!`);
-    // Reset state for MVP
+    // Booking successful, proceed to the socket tracking view!
+    setBookedJobId(jobResponse.id);
     setJobData(null);
-    setChatActive(false);
   };
+
+  if (bookedJobId) {
+    return (
+      <div className="view-container items-center py-10 w-full">
+         <ActiveJobTracker jobId={bookedJobId} />
+      </div>
+    );
+  }
 
   if (jobData) {
     return (
@@ -73,7 +122,10 @@ function ClientHome() {
          <JobConfirmation 
            jobData={jobData} 
            onBookingComplete={handleBookingComplete} 
-           onCancel={() => setJobData(null)} 
+           onCancel={() => {
+             setJobData(null);
+             setChatActive(false);
+           }} 
          />
       </div>
     );
@@ -106,23 +158,6 @@ function ClientHome() {
   );
 }
 
-// Quick Placeholder: Handyman Portal
-function PortalHome() {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="view-container"
-    >
-      <div className="portal-hero glass-panel">
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Handyman Portal</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Toggle your availability and wait for the dispatch system to ping you.
-        </p>
-      </div>
-    </motion.div>
-  );
-}
+import HandymanPortal from './pages/HandymanPortal';
 
 export default App;
