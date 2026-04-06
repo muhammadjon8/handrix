@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './jobs.dto';
@@ -12,6 +12,20 @@ import { RolesGuard } from '../common/guards/roles.guard';
 @Controller('jobs')
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
+
+  @Patch(':id/status')
+  @Roles('admin', 'handyman') // Only admin or assigned handyman should update status
+  @ApiOperation({ summary: 'Update job status (Real-time)' })
+  async updateStatus(@Param('id') id: string, @Body('status') status: any) {
+    return this.jobsService.updateStatus(Number(id), status);
+  }
+
+  @Post(':id/accept')
+  @Roles('handyman')
+  @ApiOperation({ summary: 'Handyman accepts a job' })
+  async acceptJob(@Param('id') id: string, @Request() req: any) {
+    return this.jobsService.acceptJob(Number(id), req.user.id);
+  }
 
   @Post()
   @Roles('client')

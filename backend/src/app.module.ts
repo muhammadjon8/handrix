@@ -3,9 +3,11 @@ import { AuthModule } from './auth/auth.module';
 import { IntakeModule } from './intake/intake.module';
 import { PricingModule } from './pricing/pricing.module';
 import { JobsModule } from './jobs/jobs.module';
+import { SocketModule } from './socket/socket.module';
+import { DispatchModule } from './dispatch/dispatch.module';
 
 @Module({
-  imports: [AuthModule, IntakeModule, PricingModule, JobsModule],
+  imports: [AuthModule, IntakeModule, PricingModule, JobsModule, SocketModule, DispatchModule],
   controllers: [],
   providers: [],
 })

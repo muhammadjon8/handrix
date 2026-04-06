@@ -20,13 +20,13 @@
 - [x] 2.6 Implement pricing engine — calculate quote from classified job (Labor + Parts + Transport)
 
 ### Job Lifecycle & Dispatch
-- [ ] 2.7 Implement `POST /jobs` (Create job from confirmed classification)
-- [ ] 2.8 Implement Geospatial Handyman Dispatch (PostGIS query for nearest available)
-- [ ] 2.9 Implement `POST /jobs/:id/accept` (Handyman acceptance and job locking)
-- [ ] 2.10 Implement `PATCH /jobs/:id/status` (REST endpoint for status changes)
+- [x] 2.7 Implement `POST /jobs` (Create job from confirmed classification)
+- [x] 2.8 Implement Geospatial Handyman Dispatch (PostGIS query for nearest available)
+- [x] 2.9 Implement `POST /jobs/:id/accept` (Handyman acceptance and job locking)
+- [x] 2.10 Implement `PATCH /jobs/:id/status` (REST endpoint for status changes)
 
 ### Real-Time & Notifications
-- [ ] 2.11 Set up Socket.io for Real-time status broadcasting (client rooms)
+- [x] 2.11 Set up Socket.io for Real-time status broadcasting (client rooms)
 - [ ] 2.12 Implement SendGrid email triggers for booking, completion, and job offers
 
 ### Payments & Warranty
