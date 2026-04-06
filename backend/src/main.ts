@@ -14,6 +14,11 @@ async function bootstrap() {
     transform: true,
   }));
 
+  app.enableCors({
+    origin: 'http://localhost:5173', 
+    credentials: true,
+  });
+
   // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('Handrix Home Service Platform')

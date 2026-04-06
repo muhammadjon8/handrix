@@ -37,8 +37,8 @@
 ## 3. Frontend — Client Web App (React)
 
 ### Authentication & Map
-- [ ] 3.1 Build Login/Register screens (with Google OAuth)
-- [ ] 3.2 Implement Google Maps Geocoding integration for service address lookup
+- [x] 3.1 Build Login/Register screens (with Google OAuth)
+- [x] 3.2 Implement Google Maps Geocoding integration for service address lookup
 
 ### AI Intake Chat
 - [ ] 3.3 Build Conversational AI Chat Interface for job description
