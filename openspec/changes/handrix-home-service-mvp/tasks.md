@@ -41,11 +41,11 @@
 - [x] 3.2 Implement Google Maps Geocoding integration for service address lookup
 
 ### AI Intake Chat
-- [ ] 3.3 Build Conversational AI Chat Interface for job description
-- [ ] 3.4 Build Job Scope Confirmation screen (AI-generated summary)
+- [x] 3.3 Build Conversational AI Chat Interface for job description
+- [x] 3.4 Build Job Scope Confirmation screen (AI-generated summary)
 
 ### Booking & Tracking
-- [ ] 3.5 Build Pricing Breakdown and "Accept & Book" screen
+- [x] 3.5 Build Pricing Breakdown and "Accept & Book" screen
 - [ ] 3.6 Build Stripe Elements (web) payment collection form
 - [ ] 3.7 Build Active Job Status tracker (Real-time updates via Socket.io)
 

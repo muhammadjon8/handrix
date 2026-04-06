@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Hammer, User, Settings } from 'lucide-react';
+import { Hammer, User } from 'lucide-react';
 import './App.css'; // Just keeping it if specific app styles are needed, but we rely heavily on index.css
 
 import Auth from './pages/Auth';
+import AiChat from './components/AiChat';
 
 function App() {
   const token = localStorage.getItem('token'); // Basic auth state check for UI
@@ -47,27 +49,59 @@ function App() {
   );
 }
 
+import JobConfirmation from './components/JobConfirmation';
+
 // Quick Placeholder: Client Landing
 function ClientHome() {
+  const [chatActive, setChatActive] = useState(false);
+  const [jobData, setJobData] = useState<any>(null);
+
+  const handleJobClassified = (data: any, location: { lat: number, lng: number, address: string }) => {
+    setJobData({ ...data, location });
+  };
+
+  const handleBookingComplete = (jobResponse: any) => {
+    alert(`Success! Job created with ID: ${jobResponse.id}. Wait for a Handyman!`);
+    // Reset state for MVP
+    setJobData(null);
+    setChatActive(false);
+  };
+
+  if (jobData) {
+    return (
+      <div className="view-container items-center py-10">
+         <JobConfirmation 
+           jobData={jobData} 
+           onBookingComplete={handleBookingComplete} 
+           onCancel={() => setJobData(null)} 
+         />
+      </div>
+    );
+  }
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="view-container"
+      className="view-container items-center"
     >
-      <div className="landing-hero glass-panel">
-        <h2 style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-          Home repairs, <span style={{ color: 'var(--primary-accent)' }}>on demand.</span>
-        </h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginBottom: '2rem' }}>
-          Tell us what's broken in the chat, and a certified professional will be at your door in an hour.
-        </p>
-        
-        <button className="btn-primary" onClick={() => alert("We'll implement the AI Chat next!")}>
-          Describe your problem
-        </button>
-      </div>
+      {!chatActive ? (
+        <div className="landing-hero glass-panel max-w-3xl">
+          <h2 style={{ fontSize: '3rem', marginBottom: '1rem' }} className="font-display">
+            Home repairs, <span className="text-primary-accent">on demand.</span>
+          </h2>
+          <p className="text-text-secondary text-lg mb-8">
+            Tell us what's broken in the chat, and a certified professional will be at your door in an hour.
+          </p>
+          
+          <button className="btn-primary" onClick={() => setChatActive(true)}>
+            Describe your problem
+          </button>
+        </div>
+      ) : (
+        <AiChat onJobClassified={handleJobClassified} />
+      )}
     </motion.div>
   );
 }
