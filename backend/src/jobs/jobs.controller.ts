@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Param, Post, Request, UseGuards, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JobsService } from './jobs.service';
 import { CreateJobDto } from './jobs.dto';
@@ -42,10 +42,20 @@ export class JobsController {
     return this.jobsService.findByClient(req.user.id);
   }
 
+  @Get('dispatching')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'List all jobs currently looking for a handyman' })
+  async getDispatchingJobs(
+    @Query('lat') lat?: number,
+    @Query('lng') lng?: number,
+  ) {
+    return this.jobsService.findDispatchingJobs(lat, lng);
+  }
+
   @Get('handyman')
-  @Roles('handyman')
-  @ApiOperation({ summary: 'List all jobs for the authenticated handyman' })
-  async listHandyman(@Request() req: any) {
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get job history for a worker' })
+  async getHandymanHistory(@Request() req) {
     return this.jobsService.findByHandyman(req.user.id);
   }
 }

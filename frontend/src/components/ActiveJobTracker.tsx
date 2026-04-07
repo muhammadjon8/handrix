@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { io, Socket } from 'socket.io-client';
-import { MapPin, Navigation, Settings, CheckCircle2, Loader2, Wrench } from 'lucide-react';
+import { Navigation, CheckCircle2, Loader2, Wrench } from 'lucide-react';
 
 interface ActiveJobTrackerProps {
   jobId: number;

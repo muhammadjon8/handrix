@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { db } from '../db';
 import { jobs, jobParts, handymen, warranties, users } from '../db/schema';
 import { CreateJobDto } from './jobs.dto';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { SocketGateway } from '../socket/socket.gateway';
 import { DispatchService } from '../dispatch/dispatch.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -155,10 +155,14 @@ export class JobsService {
     const nearestHandymen = await this.dispatchService.findNearestAvailableHandymen(lat, lng, requiredSkill);
     if (nearestHandymen.length === 0) return;
 
+    const job = await db.query.jobs.findFirst({ where: eq(jobs.id, jobId) });
+    if (!job) return;
+
     for (const handyman of nearestHandymen) {
       this.socketGateway.emitToUser(handyman.userId, 'new_job_available', {
-        jobId,
-        distanceKm: (handyman as any).distance
+        ...job,
+        job_type: job.jobType, // For frontend compatibility
+        distance: (handyman as any).distance,
       });
     }
   }
@@ -167,6 +171,39 @@ export class JobsService {
     return await db.query.jobs.findMany({
       where: eq(jobs.clientId, clientId),
       with: { jobParts: true, warranty: true },
+      orderBy: [desc(jobs.createdAt)],
+    });
+  }
+
+  async findDispatchingJobs(lat?: number, lng?: number) {
+    if (lat && lng) {
+      // Calculate distance using SQL if coordinates are provided
+      const distanceQuery = sql<number>`(
+        6371 * acos(
+          cos(radians(${lat})) * cos(radians(${jobs.latitude})) *
+          cos(radians(${jobs.longitude}) - radians(${lng})) +
+          sin(radians(${lat})) * sin(radians(${jobs.latitude}))
+        )
+      )`;
+
+      return await db
+        .select({
+          id: jobs.id,
+          job_type: jobs.jobType,
+          description: jobs.description,
+          latitude: jobs.latitude,
+          longitude: jobs.longitude,
+          status: jobs.status,
+          createdAt: jobs.createdAt,
+          distance: distanceQuery,
+        })
+        .from(jobs)
+        .where(eq(jobs.status, 'dispatching'))
+        .orderBy(distanceQuery);
+    }
+
+    return await db.query.jobs.findMany({
+      where: eq(jobs.status, 'dispatching'),
       orderBy: [desc(jobs.createdAt)],
     });
   }

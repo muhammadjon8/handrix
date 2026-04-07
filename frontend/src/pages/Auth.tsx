@@ -24,13 +24,14 @@ export default function Auth() {
       if (isLogin) {
         // Login API Call
         const res = await api.post('/auth/login', { email, password });
-        localStorage.setItem('token', res.data.access_token);
+        const { access_token, user } = res.data;
+        localStorage.setItem('token', access_token);
         
-        // Quick role check from token or assume client
-        navigate('/');
+        // Dynamic Role-based Redirect
+        navigate(user.role === 'handyman' ? '/portal' : '/');
       } else {
         // Register API Call
-        const res = await api.post('/auth/register', { 
+        await api.post('/auth/register', { 
           email, 
           password, 
           role,
@@ -39,9 +40,10 @@ export default function Auth() {
         
         // Auto-login after register
         const loginRes = await api.post('/auth/login', { email, password });
-        localStorage.setItem('token', loginRes.data.access_token);
+        const { access_token, user } = loginRes.data;
+        localStorage.setItem('token', access_token);
         
-        navigate(role === 'handyman' ? '/portal' : '/');
+        navigate(user.role === 'handyman' ? '/portal' : '/');
       }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Authentication failed. Please try again.');

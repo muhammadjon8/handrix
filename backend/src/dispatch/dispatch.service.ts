@@ -42,18 +42,9 @@ export class DispatchService {
       })
       .from(handymen)
       .where(and(...conditions))
-      // Filter out those who are further than their allowed radius
-      // Drizzle's having is better for computed columns, but we can also filter in memory
       .orderBy(distanceQuery)
-      .limit(10); // Check top 10 closest
+      .limit(50); // Increased limit to reach more workers
 
-    // Filter by radius and required skill
-    const eligible = nearestHandymen.filter((h) => {
-      const withinRadius = (h.distance as number) <= h.serviceRadiusKm;
-      const hasSkill = requiredSkill ? (h.skills as string[]).includes(requiredSkill) : true;
-      return withinRadius && hasSkill;
-    });
-
-    return eligible;
+    return nearestHandymen;
   }
 }

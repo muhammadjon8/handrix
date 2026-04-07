@@ -36,7 +36,7 @@ export class AuthService {
     if (isHandyman || role === 'handyman') {
       await db.insert(handymen).values({
         userId: newUser.id,
-        status: 'pending',
+        status: 'active', // Auto-active for demonstration
         availability: 'offline',
       });
     }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Clock, CreditCard, Wrench, CheckCircle, MapPin } from 'lucide-react';
+import { Clock, CreditCard, Wrench, CheckCircle, MapPin } from 'lucide-react';
 import api from '../Api';
 
 interface JobConfirmationProps {
